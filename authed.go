@@ -6,7 +6,6 @@ import (
 	"io"
 	"mime/multipart"
 	"net/http"
-	"strings"
 
 	"github.com/ipfs/go-cid"
 	"github.com/libp2p/go-libp2p-core/peer"
@@ -122,18 +121,24 @@ func (r *ContentAddReq) Send() (*AddedContent, error) {
 }
 
 func (c *AuthedClient) ContentAddFromIpfs(root cid.Cid) *ContentAddFromIpfsReq {
-	req := c.newReq("/content/add-ipfs")
-	req.par.Set("root", root.String())
-
-	return &ContentAddFromIpfsReq{
+	r := &ContentAddFromIpfsReq{
 		client: c,
-		req:    req,
+		req:    c.newReq("/content/add-ipfs"),
 	}
+
+	r.data.Root = root.String()
+	return r
 }
 
 type ContentAddFromIpfsReq struct {
 	req
 	client *AuthedClient
+	data   struct {
+		Root       string   `json:"root"`
+		Name       string   `json:"name"`
+		Collection string   `json:"collection"`
+		Peers      []string `json:"peers"`
+	}
 }
 
 // Context sets the context to be used during this request. If no context is supplied then
@@ -144,27 +149,25 @@ func (r *ContentAddFromIpfsReq) Context(ctx context.Context) *ContentAddFromIpfs
 }
 
 func (r *ContentAddFromIpfsReq) Name(v string) *ContentAddFromIpfsReq {
-	r.req.par.Set("name", v)
+	r.data.Name = v
 	return r
 }
 
 func (r *ContentAddFromIpfsReq) Collection(v string) *ContentAddFromIpfsReq {
-	r.req.par.Set("collection", v)
+	r.data.Collection = v
 	return r
 }
 
 func (r *ContentAddFromIpfsReq) Peers(peers ...peer.AddrInfo) *ContentAddFromIpfsReq {
-	s := make([]string, len(peers))
+	r.data.Peers = make([]string, len(peers))
 	for i := range peers {
-		s[i] = peers[i].String()
+		r.data.Peers[i] = peers[i].String()
 	}
-
-	r.req.par.Set("peers", strings.Join(s, ","))
 	return r
 }
 
 func (r *ContentAddFromIpfsReq) Send() (*IpfsPinStatus, error) {
-	res, cleanup, err := r.req.post(nil)
+	res, cleanup, err := r.req.postJSON(r.data)
 	defer cleanup()
 	if err != nil {
 		return nil, err

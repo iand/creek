@@ -1,6 +1,7 @@
 package creek
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -8,6 +9,8 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"strconv"
+	"strings"
 )
 
 type req struct {
@@ -72,8 +75,8 @@ func (r *req) get() (*http.Response, func(), error) {
 	return res, cleanup(res), nil
 }
 
-func (r *req) post(d io.Reader) (*http.Response, func(), error) {
-	req, err := http.NewRequest("POST", r.url().String(), d)
+func (r *req) post(ir io.Reader) (*http.Response, func(), error) {
+	req, err := http.NewRequest("POST", r.url().String(), ir)
 	if err != nil {
 		return nil, func() {}, err
 	}
@@ -92,6 +95,30 @@ func (r *req) post(d io.Reader) (*http.Response, func(), error) {
 		return nil, func() {}, err
 	}
 	return res, cleanup(res), nil
+}
+
+func (r *req) postForm(p params) (*http.Response, func(), error) {
+	enc := p.Encode()
+
+	r.headers["Content-Type"] = "application/x-www-form-urlencoded"
+	r.headers["Content-Length"] = strconv.Itoa(len(enc))
+	return r.post(strings.NewReader(enc))
+}
+
+func (r *req) postJSON(data interface{}) (*http.Response, func(), error) {
+	var body io.Reader
+	if data != nil {
+		var encoded bytes.Buffer
+		err := json.NewEncoder(&encoded).Encode(data)
+		if err != nil {
+			return nil, func() {}, err
+		}
+		body = &encoded
+		r.headers["Content-Type"] = "application/json"
+		r.headers["Content-Length"] = strconv.Itoa(encoded.Len())
+	}
+
+	return r.post(body)
 }
 
 func cleanup(res *http.Response) func() {

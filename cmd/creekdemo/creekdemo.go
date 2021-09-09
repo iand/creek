@@ -61,7 +61,7 @@ func main() {
 		log.Printf("ContentAdd: %+v", add)
 	}
 
-	ci, err := cid.Decode("QmNvTjdqEPjZVWCvRWsFJA1vK7TTw1g9JP6we1WBJTRADM")
+	ci, err := cid.Decode("bafybeiaivflo5qbiy6wmi3i7rcobsv45za2jswrely4xnmcuijf2g7lbca")
 	if err != nil {
 		log.Fatalf("decode cid: %v", err)
 	}
