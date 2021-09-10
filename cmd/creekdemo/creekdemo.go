@@ -100,6 +100,15 @@ func main() {
 		log.Printf("  First deal fail message: %s", minerfails[0].Message)
 	}
 
+	log.Printf("Fetching storage ask information for %s", miner.String())
+	minerask, err := c.PublicMinerStorageAsk(miner).Send()
+	if err != nil {
+		log.Fatalf("error: %v", err)
+	}
+	log.Printf("  Price: %s", minerask.Price)
+	log.Printf("  Verified price: %s", minerask.VerifiedPrice)
+	log.Printf("  Piece size range: %d-%d", minerask.MinPieceSize, minerask.MaxPieceSize)
+
 	//-------------------------------------------------------------
 	// Authenticated demos
 	//-------------------------------------------------------------

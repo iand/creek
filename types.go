@@ -119,11 +119,19 @@ type MinerDeal struct {
 	ContentCid       string    `json:"contentCid"`
 }
 
-type DealFailureError struct {
+type MinerDealFailure struct {
 	ID           uint   `json:"id"`
 	Miner        string `json:"miner"`
 	Phase        string `json:"phase"`
 	Message      string `json:"message"`
 	Content      uint   `json:"content"`
 	MinerVersion string `json:"minerVersion"`
+}
+
+type MinerStorageAsk struct {
+	Miner         string `json:"miner"`
+	Price         string `json:"price"`
+	VerifiedPrice string `json:"verifiedPrice"`
+	MinPieceSize  uint64 `json:"minPieceSize"`
+	MaxPieceSize  uint64 `json:"maxPieceSize"`
 }

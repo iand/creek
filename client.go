@@ -315,3 +315,38 @@ func (r *PublicMinerFailuresReq) Send() ([]MinerDealFailure, error) {
 
 	return data, nil
 }
+
+// PublicMinerStorageAsk prepares a request for a miner's storage ask details.
+func (c *Client) PublicMinerStorageAsk(addr address.Address) *PublicMinerStorageAskReq {
+	return &PublicMinerStorageAskReq{
+		client: c,
+		req:    c.newReq("/public/miners/storage/query/" + addr.String()),
+	}
+}
+
+type PublicMinerStorageAskReq struct {
+	req
+	client *Client
+}
+
+// Context sets the context to be used during this request.
+func (r *PublicMinerStorageAskReq) Context(ctx context.Context) *PublicMinerStorageAskReq {
+	r.req.ctx = ctx
+	return r
+}
+
+// Send sends the prepared request and returns the miner's storage ask details.
+func (r *PublicMinerStorageAskReq) Send() (*MinerStorageAsk, error) {
+	res, cleanup, err := r.req.get()
+	defer cleanup()
+	if err != nil {
+		return nil, err
+	}
+
+	var data MinerStorageAsk
+	if err := json.NewDecoder(res.Body).Decode(&data); err != nil {
+		return nil, newResponseError(err, res)
+	}
+
+	return &data, nil
+}
