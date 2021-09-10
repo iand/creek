@@ -118,3 +118,12 @@ type MinerDeal struct {
 	SealedAt         time.Time `json:"sealedAt"`
 	ContentCid       string    `json:"contentCid"`
 }
+
+type DealFailureError struct {
+	ID           uint   `json:"id"`
+	Miner        string `json:"miner"`
+	Phase        string `json:"phase"`
+	Message      string `json:"message"`
+	Content      uint   `json:"content"`
+	MinerVersion string `json:"minerVersion"`
+}

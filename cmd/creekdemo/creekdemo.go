@@ -87,6 +87,19 @@ func main() {
 		log.Printf("  First deal content cid %s", minerdeals[0].ContentCid)
 	}
 
+	log.Printf("Fetching failed deal information for %s", miner.String())
+	minerfails, err := c.PublicMinerFailures(miner).Send()
+	if err != nil {
+		log.Fatalf("error: %v", err)
+	}
+	if len(minerfails) == 0 {
+		log.Printf("  No failed deals found for miner")
+	} else {
+		log.Printf("  %d failed deals found for miner", len(minerfails))
+		log.Printf("  First deal fail phase: %s", minerfails[0].Phase)
+		log.Printf("  First deal fail message: %s", minerfails[0].Message)
+	}
+
 	//-------------------------------------------------------------
 	// Authenticated demos
 	//-------------------------------------------------------------

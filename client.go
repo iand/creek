@@ -280,3 +280,38 @@ func (r *PublicMinerDealsReq) Send() ([]MinerDeal, error) {
 
 	return data, nil
 }
+
+// PublicMinerFailures prepares a request for information about miner deal failures.
+func (c *Client) PublicMinerFailures(addr address.Address) *PublicMinerFailuresReq {
+	return &PublicMinerFailuresReq{
+		client: c,
+		req:    c.newReq("/public/miners/failures/" + addr.String()),
+	}
+}
+
+type PublicMinerFailuresReq struct {
+	req
+	client *Client
+}
+
+// Context sets the context to be used during this request.
+func (r *PublicMinerFailuresReq) Context(ctx context.Context) *PublicMinerFailuresReq {
+	r.req.ctx = ctx
+	return r
+}
+
+// Send sends the prepared request and returns information about miner deal failures.
+func (r *PublicMinerFailuresReq) Send() ([]MinerDealFailure, error) {
+	res, cleanup, err := r.req.get()
+	defer cleanup()
+	if err != nil {
+		return nil, err
+	}
+
+	var data []MinerDealFailure
+	if err := json.NewDecoder(res.Body).Decode(&data); err != nil {
+		return nil, newResponseError(err, res)
+	}
+
+	return data, nil
+}
