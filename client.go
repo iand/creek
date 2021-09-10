@@ -4,6 +4,8 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
+
+	"github.com/ipfs/go-cid"
 )
 
 const (
@@ -69,6 +71,7 @@ func (c *Client) WithToken(token string) *AuthedClient {
 	return ac
 }
 
+// PublicNodeInfo prepares a request for the health of the Estuary node.
 func (c *Client) Health() *HealthReq {
 	return &HealthReq{
 		client: c,
@@ -88,6 +91,7 @@ func (r *HealthReq) Context(ctx context.Context) *HealthReq {
 	return r
 }
 
+// Send sends the prepared request and returns the health status reported by the Estuary node.
 func (r *HealthReq) Send() (*Health, error) {
 	res, cleanup, err := r.req.get()
 	defer cleanup()
@@ -122,6 +126,7 @@ func (r *StatsReq) Context(ctx context.Context) *StatsReq {
 	return r
 }
 
+// Send sends the prepared request and decodes the response.
 func (r *StatsReq) Send() (*PublicStats, error) {
 	res, cleanup, err := r.req.get()
 	defer cleanup()
@@ -137,6 +142,7 @@ func (r *StatsReq) Send() (*PublicStats, error) {
 	return &data, nil
 }
 
+// PublicNodeInfo prepares a request for information about the Estuary node.
 func (c *Client) PublicNodeInfo() *PublicNodeInfoReq {
 	return &PublicNodeInfoReq{
 		client: c,
@@ -156,6 +162,7 @@ func (r *PublicNodeInfoReq) Context(ctx context.Context) *PublicNodeInfoReq {
 	return r
 }
 
+// Send sends the prepared request and returns public information about the Estuary node.
 func (r *PublicNodeInfoReq) Send() (*PublicNodeInfo, error) {
 	res, cleanup, err := r.req.get()
 	defer cleanup()
@@ -169,4 +176,40 @@ func (r *PublicNodeInfoReq) Send() (*PublicNodeInfo, error) {
 	}
 
 	return &data, nil
+}
+
+// PublicNodeInfo prepares a request for information about content by its cid
+func (c *Client) PublicContentByCid(ci cid.Cid) *PublicContentByCidReq {
+	return &PublicContentByCidReq{
+		client: c,
+		req:    c.newReq("/public/by-cid/" + ci.String()),
+	}
+}
+
+type PublicContentByCidReq struct {
+	req
+	client *Client
+}
+
+// Context sets the context to be used during this request. If no context is supplied then
+// the request will use context.Background.
+func (r *PublicContentByCidReq) Context(ctx context.Context) *PublicContentByCidReq {
+	r.req.ctx = ctx
+	return r
+}
+
+// Send sends the prepared request and returns public information about the content.
+func (r *PublicContentByCidReq) Send() ([]ContentInfo, error) {
+	res, cleanup, err := r.req.get()
+	defer cleanup()
+	if err != nil {
+		return nil, err
+	}
+
+	var data []ContentInfo
+	if err := json.NewDecoder(res.Body).Decode(&data); err != nil {
+		return nil, newResponseError(err, res)
+	}
+
+	return data, nil
 }

@@ -40,6 +40,17 @@ func main() {
 	}
 	log.Printf("PublicNodeInfo.PrimaryAddress: %v", pi.PrimaryAddress)
 
+	vcid, err := cid.Decode("QmVrrF7DTnbqKvWR7P7ihJKp4N5fKmBX29m5CHbW9WLep9")
+	if err != nil {
+		log.Fatalf("decode cid: %v", err)
+	}
+
+	info, err := c.PublicContentByCid(vcid).Send()
+	if err != nil {
+		log.Fatalf("error: %v", err)
+	}
+	log.Printf("PublicContentByCid: %+v", info)
+
 	if *token == "" {
 		log.Printf("use -token to demo authenticated services")
 		return
