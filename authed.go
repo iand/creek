@@ -69,8 +69,7 @@ type ContentAddReq struct {
 	r      io.Reader
 }
 
-// Context sets the context to be used during this request. If no context is supplied then
-// the request will use context.Background.
+// Context sets the context to be used during this request.
 func (r *ContentAddReq) Context(ctx context.Context) *ContentAddReq {
 	r.req.ctx = ctx
 	return r
@@ -141,8 +140,7 @@ type ContentAddFromIpfsReq struct {
 	}
 }
 
-// Context sets the context to be used during this request. If no context is supplied then
-// the request will use context.Background.
+// Context sets the context to be used during this request.
 func (r *ContentAddFromIpfsReq) Context(ctx context.Context) *ContentAddFromIpfsReq {
 	r.req.ctx = ctx
 	return r

@@ -85,8 +85,7 @@ type HealthReq struct {
 	client *Client
 }
 
-// Context sets the context to be used during this request. If no context is supplied then
-// the request will use context.Background.
+// Context sets the context to be used during this request.
 func (r *HealthReq) Context(ctx context.Context) *HealthReq {
 	r.req.ctx = ctx
 	return r
@@ -120,8 +119,7 @@ type StatsReq struct {
 	client *Client
 }
 
-// Context sets the context to be used during this request. If no context is supplied then
-// the request will use context.Background.
+// Context sets the context to be used during this request.
 func (r *StatsReq) Context(ctx context.Context) *StatsReq {
 	r.req.ctx = ctx
 	return r
@@ -156,8 +154,7 @@ type PublicNodeInfoReq struct {
 	client *Client
 }
 
-// Context sets the context to be used during this request. If no context is supplied then
-// the request will use context.Background.
+// Context sets the context to be used during this request.
 func (r *PublicNodeInfoReq) Context(ctx context.Context) *PublicNodeInfoReq {
 	r.req.ctx = ctx
 	return r
@@ -192,8 +189,7 @@ type PublicContentByCidReq struct {
 	client *Client
 }
 
-// Context sets the context to be used during this request. If no context is supplied then
-// the request will use context.Background.
+// Context sets the context to be used during this request.
 func (r *PublicContentByCidReq) Context(ctx context.Context) *PublicContentByCidReq {
 	r.req.ctx = ctx
 	return r
@@ -228,8 +224,7 @@ type PublicMinerStatsReq struct {
 	client *Client
 }
 
-// Context sets the context to be used during this request. If no context is supplied then
-// the request will use context.Background.
+// Context sets the context to be used during this request.
 func (r *PublicMinerStatsReq) Context(ctx context.Context) *PublicMinerStatsReq {
 	r.req.ctx = ctx
 	return r
