@@ -10,7 +10,6 @@ import (
 	"net/http"
 	"net/url"
 	"strconv"
-	"strings"
 )
 
 type req struct {
@@ -85,14 +84,6 @@ func (r *req) post(ir io.Reader) (*http.Response, func(), error) {
 		return nil, func() {}, err
 	}
 	return r.do(hr)
-}
-
-func (r *req) postForm(p params) (*http.Response, func(), error) {
-	enc := p.Encode()
-
-	r.headers["Content-Type"] = "application/x-www-form-urlencoded"
-	r.headers["Content-Length"] = strconv.Itoa(len(enc))
-	return r.post(strings.NewReader(enc))
 }
 
 func (r *req) postJSON(data interface{}) (*http.Response, func(), error) {

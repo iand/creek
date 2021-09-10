@@ -181,13 +181,3 @@ func (r *ContentAddFromIpfsReq) Send() (*IpfsPinStatus, error) {
 
 	return &data, nil
 }
-
-func (c *AuthedClient) ListPins(root cid.Cid) *ContentAddFromIpfsReq {
-	r := &ContentAddFromIpfsReq{
-		client: c,
-		req:    c.newReq("/content/add-ipfs"),
-	}
-
-	r.data.Root = root.String()
-	return r
-}
