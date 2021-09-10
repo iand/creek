@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/filecoin-project/go-address"
 	"github.com/ipfs/go-cid"
 )
 
@@ -178,7 +179,7 @@ func (r *PublicNodeInfoReq) Send() (*PublicNodeInfo, error) {
 	return &data, nil
 }
 
-// PublicNodeInfo prepares a request for information about content by its cid
+// PublicContentByCid prepares a request for information about content by its cid
 func (c *Client) PublicContentByCid(ci cid.Cid) *PublicContentByCidReq {
 	return &PublicContentByCidReq{
 		client: c,
@@ -212,4 +213,40 @@ func (r *PublicContentByCidReq) Send() ([]ContentInfo, error) {
 	}
 
 	return data, nil
+}
+
+// PublicMinerStats prepares a request for public stats about a miner.
+func (c *Client) PublicMinerStats(addr address.Address) *PublicMinerStatsReq {
+	return &PublicMinerStatsReq{
+		client: c,
+		req:    c.newReq("/public/miners/stats/" + addr.String()),
+	}
+}
+
+type PublicMinerStatsReq struct {
+	req
+	client *Client
+}
+
+// Context sets the context to be used during this request. If no context is supplied then
+// the request will use context.Background.
+func (r *PublicMinerStatsReq) Context(ctx context.Context) *PublicMinerStatsReq {
+	r.req.ctx = ctx
+	return r
+}
+
+// Send sends the prepared request and returns public stats about the miner.
+func (r *PublicMinerStatsReq) Send() (*MinerStats, error) {
+	res, cleanup, err := r.req.get()
+	defer cleanup()
+	if err != nil {
+		return nil, err
+	}
+
+	var data MinerStats
+	if err := json.NewDecoder(res.Body).Decode(&data); err != nil {
+		return nil, newResponseError(err, res)
+	}
+
+	return &data, nil
 }

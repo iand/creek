@@ -82,3 +82,22 @@ type ContentDeal struct {
 	OnChainAt        time.Time `json:"onChainAt"`
 	SealedAt         time.Time `json:"sealedAt"`
 }
+
+type MinerStats struct {
+	Miner           string          `json:"miner"`
+	Name            string          `json:"name"`
+	Version         string          `json:"version"`
+	UsedByEstuary   bool            `json:"usedByEstuary"`
+	DealCount       int64           `json:"dealCount"`
+	ErrorCount      int64           `json:"errorCount"`
+	Suspended       bool            `json:"suspended"`
+	SuspendedReason string          `json:"suspendedReason"`
+	ChainInfo       *MinerChainInfo `json:"chainInfo"`
+}
+
+type MinerChainInfo struct {
+	PeerID    string   `json:"peerId"`
+	Addresses []string `json:"addresses"`
+	Owner     string   `json:"owner"`
+	Worker    string   `json:"worker"`
+}
