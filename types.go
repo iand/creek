@@ -34,7 +34,7 @@ type IpfsPin struct {
 }
 
 type IpfsPinStatus struct {
-	Requestid string                 `json:"requestid"`
+	RequestId string                 `json:"requestid"`
 	Status    string                 `json:"status"`
 	Created   time.Time              `json:"created"`
 	Pin       IpfsPin                `json:"pin"`
@@ -134,4 +134,9 @@ type MinerStorageAsk struct {
 	VerifiedPrice string `json:"verifiedPrice"`
 	MinPieceSize  uint64 `json:"minPieceSize"`
 	MaxPieceSize  uint64 `json:"maxPieceSize"`
+}
+
+type PinList struct {
+	Count   int             `json:"count"`
+	Results []IpfsPinStatus `json:"results"`
 }

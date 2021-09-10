@@ -19,6 +19,8 @@ type AuthedClient struct {
 	addr  string
 	ua    string
 	token string
+
+	Pins *PinServices
 }
 
 func (c *AuthedClient) userAgent() string {
@@ -45,12 +47,13 @@ func (c *AuthedClient) newReq(path string) req {
 // New creates a new client that will use the supplied HTTP client and connect
 // via the specified API host address.
 func NewAuthedClient(client *http.Client, addr string, token string) *AuthedClient {
-	c := &AuthedClient{
+	ac := &AuthedClient{
 		hc:    client,
 		addr:  addr,
 		token: token,
 	}
-	return c
+	ac.Pins = NewPinServices(ac)
+	return ac
 }
 
 func (c *AuthedClient) ContentAdd(name string, r io.Reader) *ContentAddReq {
@@ -177,4 +180,14 @@ func (r *ContentAddFromIpfsReq) Send() (*IpfsPinStatus, error) {
 	}
 
 	return &data, nil
+}
+
+func (c *AuthedClient) ListPins(root cid.Cid) *ContentAddFromIpfsReq {
+	r := &ContentAddFromIpfsReq{
+		client: c,
+		req:    c.newReq("/content/add-ipfs"),
+	}
+
+	r.data.Root = root.String()
+	return r
 }

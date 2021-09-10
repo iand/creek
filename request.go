@@ -52,19 +52,15 @@ func (r *req) url() *url.URL {
 	return &u
 }
 
-func (r *req) get() (*http.Response, func(), error) {
-	req, err := http.NewRequest("GET", r.url().String(), nil)
-	if err != nil {
-		return nil, func() {}, err
-	}
+func (r *req) do(hr *http.Request) (*http.Response, func(), error) {
 	if r.ctx != nil {
-		req = req.WithContext(r.ctx)
+		hr = hr.WithContext(r.ctx)
 	}
 	for k, v := range r.headers {
-		req.Header.Set(k, v)
+		hr.Header.Set(k, v)
 	}
 
-	res, err := r.hc.Do(req)
+	res, err := r.hc.Do(hr)
 	if err != nil {
 		return nil, func() {}, err
 	}
@@ -75,26 +71,20 @@ func (r *req) get() (*http.Response, func(), error) {
 	return res, cleanup(res), nil
 }
 
-func (r *req) post(ir io.Reader) (*http.Response, func(), error) {
-	req, err := http.NewRequest("POST", r.url().String(), ir)
+func (r *req) get() (*http.Response, func(), error) {
+	hr, err := http.NewRequest("GET", r.url().String(), nil)
 	if err != nil {
 		return nil, func() {}, err
 	}
-	if r.ctx != nil {
-		req = req.WithContext(r.ctx)
-	}
-	for k, v := range r.headers {
-		req.Header.Set(k, v)
-	}
+	return r.do(hr)
+}
 
-	res, err := r.hc.Do(req)
+func (r *req) post(ir io.Reader) (*http.Response, func(), error) {
+	hr, err := http.NewRequest("POST", r.url().String(), ir)
 	if err != nil {
 		return nil, func() {}, err
 	}
-	if err := responseError(res); err != nil {
-		return nil, func() {}, err
-	}
-	return res, cleanup(res), nil
+	return r.do(hr)
 }
 
 func (r *req) postForm(p params) (*http.Response, func(), error) {
@@ -119,6 +109,14 @@ func (r *req) postJSON(data interface{}) (*http.Response, func(), error) {
 	}
 
 	return r.post(body)
+}
+
+func (r *req) delete() (*http.Response, func(), error) {
+	hr, err := http.NewRequest("DELETE", r.url().String(), nil)
+	if err != nil {
+		return nil, func() {}, err
+	}
+	return r.do(hr)
 }
 
 func cleanup(res *http.Response) func() {

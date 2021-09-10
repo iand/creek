@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
+	"net/url"
 
 	"github.com/filecoin-project/go-address"
 	"github.com/ipfs/go-cid"
@@ -180,7 +181,7 @@ func (r *PublicNodeInfoReq) Send() (*PublicNodeInfo, error) {
 func (c *Client) PublicContentByCid(ci cid.Cid) *PublicContentByCidReq {
 	return &PublicContentByCidReq{
 		client: c,
-		req:    c.newReq("/public/by-cid/" + ci.String()),
+		req:    c.newReq("/public/by-cid/" + url.PathEscape(ci.String())),
 	}
 }
 
@@ -215,7 +216,7 @@ func (r *PublicContentByCidReq) Send() ([]ContentInfo, error) {
 func (c *Client) PublicMinerStats(addr address.Address) *PublicMinerStatsReq {
 	return &PublicMinerStatsReq{
 		client: c,
-		req:    c.newReq("/public/miners/stats/" + addr.String()),
+		req:    c.newReq("/public/miners/stats/" + url.PathEscape(addr.String())),
 	}
 }
 
@@ -250,7 +251,7 @@ func (r *PublicMinerStatsReq) Send() (*MinerStats, error) {
 func (c *Client) PublicMinerDeals(addr address.Address) *PublicMinerDealsReq {
 	return &PublicMinerDealsReq{
 		client: c,
-		req:    c.newReq("/public/miners/deals/" + addr.String()),
+		req:    c.newReq("/public/miners/deals/" + url.PathEscape(addr.String())),
 	}
 }
 
@@ -285,7 +286,7 @@ func (r *PublicMinerDealsReq) Send() ([]MinerDeal, error) {
 func (c *Client) PublicMinerFailures(addr address.Address) *PublicMinerFailuresReq {
 	return &PublicMinerFailuresReq{
 		client: c,
-		req:    c.newReq("/public/miners/failures/" + addr.String()),
+		req:    c.newReq("/public/miners/failures/" + url.PathEscape(addr.String())),
 	}
 }
 
@@ -320,7 +321,7 @@ func (r *PublicMinerFailuresReq) Send() ([]MinerDealFailure, error) {
 func (c *Client) PublicMinerStorageAsk(addr address.Address) *PublicMinerStorageAskReq {
 	return &PublicMinerStorageAskReq{
 		client: c,
-		req:    c.newReq("/public/miners/storage/query/" + addr.String()),
+		req:    c.newReq("/public/miners/storage/query/" + url.PathEscape(addr.String())),
 	}
 }
 

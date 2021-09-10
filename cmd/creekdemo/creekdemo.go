@@ -13,6 +13,7 @@ import (
 var (
 	token    = flag.String("token", "", "Your authentication token")
 	filename = flag.String("file", "", "A file to upload to estuary")
+	readonly = flag.Bool("readonly", true, "Set to true to restrict demo to reading data")
 )
 
 func main() {
@@ -117,8 +118,29 @@ func main() {
 		log.Printf("Skipping authenticated services demo, specify -token to enable")
 		return
 	}
+
 	ac := c.WithToken(*token)
 
+	if !*readonly {
+		demoAddContent(ac)
+	}
+
+	log.Printf("Fetching list of pins")
+	pinlist, err := ac.Pins.List().Send()
+	if err != nil {
+		log.Fatalf("error: %v", err)
+	}
+	if pinlist.Count == 0 {
+		log.Printf("  No pins found")
+	} else {
+		log.Printf("  %d pins found", pinlist.Count)
+		log.Printf("  First pin status: %s", pinlist.Results[0].Status)
+		log.Printf("  First pin created: %s", pinlist.Results[0].Created)
+		log.Printf("  First pin cid: %s", pinlist.Results[0].Pin.Cid)
+	}
+}
+
+func demoAddContent(ac *creek.AuthedClient) {
 	if *filename != "" {
 		fi, err := os.Open(*filename)
 		if err != nil {
@@ -142,4 +164,12 @@ func main() {
 		log.Fatalf("error: %v", err)
 	}
 	log.Printf("ContentAddFromIpfs: %+v", pin)
+
+	log.Printf("Adding pin")
+	pinstatus, err := ac.Pins.Add(ci).Send()
+	if err != nil {
+		log.Fatalf("error: %v", err)
+	}
+	log.Printf("  Pin request id: %s", pinstatus.RequestId)
+	log.Printf("  Pin status: %s", pinstatus.Status)
 }
