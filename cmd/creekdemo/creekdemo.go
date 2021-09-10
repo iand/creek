@@ -49,7 +49,7 @@ func main() {
 		log.Fatalf("decode cid: %v", err)
 	}
 
-	log.Printf("Fetching information about content ", vcid.String())
+	log.Printf("Fetching information about content %s", vcid.String())
 	infos, err := c.PublicContentByCid(vcid).Send()
 	if err != nil {
 		log.Fatalf("error: %v", err)
@@ -74,13 +74,25 @@ func main() {
 	log.Printf("  Miner version: %s", minerstats.Version)
 	log.Printf("  Miner deal count: %v", minerstats.DealCount)
 
-	if *token == "" {
-		log.Printf("use -token to demo authenticated services")
-		return
+	log.Printf("Fetching deal information for %s", miner.String())
+	minerdeals, err := c.PublicMinerDeals(miner).Send()
+	if err != nil {
+		log.Fatalf("error: %v", err)
+	}
+	if len(minerdeals) == 0 {
+		log.Printf("  No deals found for miner")
+	} else {
+		log.Printf("  %d deals found for miner", len(minerdeals))
+		log.Printf("  First deal proposal cid %s", minerdeals[0].PropCid)
+		log.Printf("  First deal content cid %s", minerdeals[0].ContentCid)
 	}
 
+	//-------------------------------------------------------------
+	// Authenticated demos
+	//-------------------------------------------------------------
+
 	if *token == "" {
-		log.Printf("use -token to demo authenticated services")
+		log.Printf("Skipping authenticated services demo, specify -token to enable")
 		return
 	}
 	ac := c.WithToken(*token)

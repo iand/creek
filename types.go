@@ -101,3 +101,20 @@ type MinerChainInfo struct {
 	Owner     string   `json:"owner"`
 	Worker    string   `json:"worker"`
 }
+
+type MinerDeal struct {
+	ID               uint      `json:"id"`
+	Content          uint      `json:"content"`
+	PropCid          string    `json:"propCid"`
+	Miner            string    `json:"miner"`
+	DealID           int64     `json:"dealId"`
+	Failed           bool      `json:"failed"`
+	Verified         bool      `json:"verified"`
+	FailedAt         time.Time `json:"failedAt,omitempty"`
+	DTChan           string    `json:"dtChan"`
+	TransferStarted  time.Time `json:"transferStarted"`
+	TransferFinished time.Time `json:"transferFinished"`
+	OnChainAt        time.Time `json:"onChainAt"`
+	SealedAt         time.Time `json:"sealedAt"`
+	ContentCid       string    `json:"contentCid"`
+}

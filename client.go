@@ -245,3 +245,38 @@ func (r *PublicMinerStatsReq) Send() (*MinerStats, error) {
 
 	return &data, nil
 }
+
+// PublicMinerDeals prepares a request for information about deals made with a miner.
+func (c *Client) PublicMinerDeals(addr address.Address) *PublicMinerDealsReq {
+	return &PublicMinerDealsReq{
+		client: c,
+		req:    c.newReq("/public/miners/deals/" + addr.String()),
+	}
+}
+
+type PublicMinerDealsReq struct {
+	req
+	client *Client
+}
+
+// Context sets the context to be used during this request.
+func (r *PublicMinerDealsReq) Context(ctx context.Context) *PublicMinerDealsReq {
+	r.req.ctx = ctx
+	return r
+}
+
+// Send sends the prepared request and returns information about deals made with a miner.
+func (r *PublicMinerDealsReq) Send() ([]MinerDeal, error) {
+	res, cleanup, err := r.req.get()
+	defer cleanup()
+	if err != nil {
+		return nil, err
+	}
+
+	var data []MinerDeal
+	if err := json.NewDecoder(res.Body).Decode(&data); err != nil {
+		return nil, newResponseError(err, res)
+	}
+
+	return data, nil
+}
